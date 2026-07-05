@@ -1,0 +1,29 @@
+/* تنسيق القسم الخاص بالدعم الفني */
+.support-section {
+  text-align: center;
+  font-family: 'Tajawal', sans-serif; /* يمكنك تغيير الخط حسب المستخدم في منصتك */
+  margin-top: 20px;
+  direction: rtl; /* لضبط الاتجاه من اليمين لليسار */
+}
+
+/* تنسيق النص الرمادي */
+.support-text {
+  color: #7a7a7a;
+  font-size: 14px;
+}
+
+/* تنسيق رابط الواتساب (الرقم والاسم) */
+.whatsapp-link {
+  display: inline-block;
+  margin-top: 5px;
+  color: #55b876; /* درجة اللون الأخضر المشابهة للصورة */
+  font-weight: bold;
+  font-size: 16px;
+  text-decoration: none; /* إزالة الخط السفلي من الرابط */
+}
+
+/* تغيير اللون قليلاً عند تمرير مؤشر الفأرة */
+.whatsapp-link:hover {
+  color: #42965d;
+  text-decoration: underline; /* إضافة خط سفلي عند التمرير للتوضيح بأنه قابل للضغط */
+}
