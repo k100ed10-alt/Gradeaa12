@@ -454,13 +454,8 @@
                 { q: "دائرة مساحتها تقريباً ٤٩٠ سم² فإن مساحة قطاع من هذه الدائرة طول قوسه ٣٢ سم = ...... سم²", options: ["١٠٠", "٢٠٠", "٤٠٠", "٣٠٠"], answer: 1 },
                 { q: "قطاع دائري مساحته (م) زاد طول قطر دائرته إلي الضعف فإن مساحته تصبح ......... باعتبار أن زاويته المركزية لا تتغير.", options: ["٢م", "٤م", "١/٢م", "٣م"], answer: 1 }
             ],
-            hard: [                { q: "قطاع دائري محيطه ٣٥ سم ، ومساحته ٧٥ سم² فإن قياس زاويته بالقياس الدائري = ............ ", options: ["٣/٢ أو ٧/٣", "٤/٣ أو ٧/٣", "٣/٢ أو ٨/٣", "١ أو ٨/٣"], answer: 2 },
-                   const currentQuestion = {
-    q: "في الشكل المقابل، مساحة الجزء المظلل = ........... سم²",
-    img: "https://i.postimg.cc/C1srTSw5/IMG-1513.jpg", // الرابط الخاص بك
-    options: ["٣ جذر(١٨)", "١٨", "٦π", "٣π جذر(٩٠)"],
-    answer: 1
-}
+            hard: [                { q: "قطاع دائري محيطه ٣٥ سم ، ومساحته ٧٥ سم² فإن قياس زاويته بالقياس الدائري = ............ ", options: ["٣/٢ أو ٧/٣", "٤/٣ أو ٧/٣", "٣/٢ أو ٨/٣", "١ أو ٨/٣"], answer: 2 }
+        
 
 
                    
@@ -556,25 +551,9 @@
         buildQuiz(lessonData ? lessonData.quiz : null, 'quiz-content', 'submit-btn', 'result-box');
         buildQuiz(lessonData ? lessonData.hard : null, 'hard-quiz-content', 'submit-hard-btn', 'result-box-hard');
     }
-function renderQuiz(question) {
-    const container = document.getElementById('quiz-container');
+
     
-    // بناء نص السؤال
-    let htmlContent = `<h3>${question.q}</h3>`;
-    
-    // التعديل: التحقق من وجود صورة وإضافتها
-    if (question.img) {
-        htmlContent += `<img src="${question.img}" style="max-width: 100%; height: auto; margin-bottom: 15px; border-radius: 8px;">`;
-    }
-    
-    // إضافة الخيارات
-    htmlContent += `<div>${question.options.map((opt, index) => `
-        <button class="option-btn" onclick="checkAnswer(${index})">${opt}</button>
-    `).join('')}</div>`;
-    
-    // تحديث الصفحة
-    container.innerHTML = htmlContent;
-}
+  
 
     // دالة بناء أسئلة الخيارات
     function buildQuiz(questionsArray, containerId, btnId, resultId) {
