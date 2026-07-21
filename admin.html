@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم المعلم - منصة حصاد</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+
+    * { box-sizing: border-box; }
+
+    body {
+        font-family: 'Tajawal', sans-serif;
+        background-color: #f8f9fa;
+        color: #2b2b2b;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ===== شاشة الدخول ===== */
+    #login-view {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .login-card {
+        background: #fff;
+        padding: 40px 36px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        text-align: center;
+        width: 100%;
+        max-width: 340px;
+    }
+    .login-card h1 {
+        color: #4a779b;
+        font-size: 22px;
+        margin: 0 0 4px 0;
+    }
+    .login-card p.sub {
+        color: #888;
+        font-size: 14px;
+        margin: 0 0 24px 0;
+    }
+    .field { text-align: right; margin-bottom: 14px; }
+    .field label { display:block; font-size: 13px; font-weight: bold; color: #4a779b; margin-bottom: 6px; }
+    input[type="email"], input[type="password"], input[type="text"], input[type="date"] {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #eee;
+        border-radius: 10px;
+        outline: none;
+        font-family: inherit;
+        font-size: 15px;
+        transition: border 0.2s;
+    }
+    input:focus { border-color: #4a779b; }
+
+    .btn {
+        background-color: #4a779b;
+        color: #fff;
+        border: none;
+        padding: 13px 20px;
+        font-size: 15px;
+        font-weight: bold;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background 0.2s, transform 0.1s;
+        width: 100%;
+    }
+    .btn:hover { background-color: #365b77; }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.6; cursor: default; }
+
+    #login-error { color: #c0392b; font-size: 13.5px; margin-top: 14px; min-height: 18px; }
+
+    /* ===== لوحة التحكم ===== */
+    #dashboard-view { display: none; max-width: 980px; margin: 0 auto; padding: 24px 18px 60px; }
+
+    .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        padding-bottom: 16px;
+        border-bottom: 3px solid #e8edf1;
+    }
+    .topbar h1 { font-size: 24px; color: #4a779b; margin: 0; }
+    .topbar .sub { font-size: 13px; color: #999; margin-top: 2px; }
+    .btn-logout {
+        background: transparent; border: 2px solid #d15b40; color: #d15b40;
+        padding: 9px 18px; border-radius: 8px; font-weight: bold; cursor: pointer;
+        font-family: inherit; font-size: 14px; transition: all 0.2s;
+    }
+    .btn-logout:hover { background: #d15b40; color: #fff; }
+
+    .card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+        border: 1px solid #eee;
+        margin-bottom: 24px;
+    }
+    .card h2 { font-size: 17px; color: #333; margin: 0 0 18px 0; display:flex; align-items:center; gap:8px; }
+
+    .add-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.4fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+    }
+    @media (max-width: 760px) { .add-grid { grid-template-columns: 1fr; } }
+    .add-grid .btn { white-space: nowrap; }
+
+    .toolbar { display:flex; justify-content: space-between; align-items:center; margin-bottom: 14px; gap: 12px; flex-wrap: wrap; }
+    .toolbar input[type="text"] { max-width: 260px; }
+    .count-pill { background:#eef3f7; color:#4a779b; font-weight:bold; font-size:13px; padding:6px 14px; border-radius:20px; white-space:nowrap; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+        text-align: right; font-size: 12.5px; color: #999; font-weight: bold;
+        text-transform: uppercase; letter-spacing: .3px; padding: 10px 8px; border-bottom: 2px solid #eee;
+    }
+    tbody td { padding: 12px 8px; border-bottom: 1px solid #f2f2f2; font-size: 14.5px; vertical-align: middle; }
+    tbody tr:hover { background: #fafcfd; }
+    .code-cell { font-family: 'Courier New', monospace; font-weight: bold; color: #4a779b; }
+
+    .status-pill { display:inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12.5px; font-weight: bold; }
+    .status-active { background:#e3f6ea; color:#1e8a4c; }
+    .status-inactive { background:#f4f4f4; color:#888; }
+    .status-expired { background:#fdeceb; color:#c0392b; }
+
+    .row-actions { display:flex; gap:8px; }
+    .icon-btn {
+        border: none; background:#f4f6f8; width:32px; height:32px; border-radius:8px; cursor:pointer;
+        font-size:14px; display:flex; align-items:center; justify-content:center; transition: background .2s;
+    }
+    .icon-btn:hover { background:#e5eaee; }
+    .icon-btn.danger:hover { background:#fdeceb; }
+
+    .empty-state { text-align:center; padding: 40px 10px; color:#999; }
+    .empty-state .big { font-size: 34px; margin-bottom: 10px; }
+
+    #toast {
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+        background: #333; color:#fff; padding: 12px 22px; border-radius: 10px; font-size: 14px;
+        opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ===== شاشة الدخول ===== -->
+<div id="login-view">
+    <div class="login-card">
+        <h1>لوحة تحكم المعلم</h1>
+        <p class="sub">منصة حصاد التعليمية</p>
+        <div class="field">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="admin-email" placeholder="example@email.com">
+        </div>
+        <div class="field">
+            <label>كلمة المرور</label>
+            <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter'){window.doLogin();}">
+        </div>
+        <button class="btn" id="login-btn" onclick="window.doLogin()">تسجيل الدخول</button>
+        <p id="login-error"></p>
+    </div>
+</div>
+
+<!-- ===== لوحة التحكم ===== -->
+<div id="dashboard-view">
+    <div class="topbar">
+        <div>
+            <h1>إدارة الطلاب</h1>
+            <div class="sub" id="admin-email-label"></div>
+        </div>
+        <button class="btn-logout" onclick="window.doLogout()">تسجيل الخروج</button>
+    </div>
+
+    <div class="card">
+        <h2>➕ إضافة طالب جديد</h2>
+        <div class="add-grid">
+            <div class="field" style="margin:0;">
+                <label>كود الطالب</label>
+                <input type="text" id="new-code" placeholder="مثال: amina2026">
+            </div>
+            <div class="field" style="margin:0;">
+                <label>اسم الطالب</label>
+                <input type="text" id="new-name" placeholder="اسم الطالب">
+            </div>
+            <div class="field" style="margin:0;">
+                <label>تاريخ انتهاء الاشتراك</label>
+                <input type="date" id="new-expiry">
+            </div>
+            <button class="btn" onclick="window.addStudent()">إضافة</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="toolbar">
+            <h2 style="margin:0;">📋 قائمة الطلاب</h2>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="search-box" placeholder="ابحث بالاسم أو الكود..." oninput="window.renderStudents()">
+                <span class="count-pill" id="count-pill">0 طالب</span>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>الكود</th>
+                    <th>الاسم</th>
+                    <th>تاريخ الانتهاء</th>
+                    <th>الحالة</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="students-tbody"></tbody>
+        </table>
+        <div id="empty-state" class="empty-state" style="display:none;">
+            <div class="big">📭</div>
+            لا يوجد طلاب مضافون بعد
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+        getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBFCOFMb987uFI_qm-1P4M10Expb3mrG1g",
+        authDomain: "grade12platform.firebaseapp.com",
+        projectId: "grade12platform",
+        storageBucket: "grade12platform.firebasestorage.app",
+        messagingSenderId: "359958230567",
+        appId: "1:359958230567:web:194a70d7552592c5680002"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let studentsCache = []; // [{code, name, expiryDate, active}]
+    let unsubscribe = null;
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // ===== تسجيل الدخول =====
+    window.doLogin = async function () {
+        const email = document.getElementById('admin-email').value.trim();
+        const password = document.getElementById('admin-password').value;
+        const errorEl = document.getElementById('login-error');
+        const btn = document.getElementById('login-btn');
+
+        if (!email || !password) {
+            errorEl.innerText = "الرجاء إدخال البريد الإلكتروني وكلمة المرور.";
+            return;
+        }
+
+        btn.disabled = true;
+        errorEl.innerText = "";
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (err) {
+            console.error(err);
+            errorEl.innerText = "بيانات الدخول غير صحيحة.";
+        } finally {
+            btn.disabled = false;
+        }
+    };
+
+    window.doLogout = async function () {
+        if (unsubscribe) unsubscribe();
+        await signOut(auth);
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'block';
+            document.getElementById('admin-email-label').innerText = user.email;
+            startListening();
+        } else {
+            document.getElementById('login-view').style.display = 'flex';
+            document.getElementById('dashboard-view').style.display = 'none';
+        }
+    });
+
+    // ===== الاستماع المباشر لقائمة الطلاب =====
+    function startListening() {
+        unsubscribe = onSnapshot(collection(db, "students"), (snapshot) => {
+            studentsCache = snapshot.docs.map(d => ({ code: d.id, ...d.data() }));
+            studentsCache.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+            window.renderStudents();
+        }, (err) => {
+            console.error(err);
+            showToast("تعذر تحميل قائمة الطلاب");
+        });
+    }
+
+    // ===== عرض قائمة الطلاب (مع دعم البحث) =====
+    window.renderStudents = function () {
+        const search = (document.getElementById('search-box').value || '').trim().toLowerCase();
+        const tbody = document.getElementById('students-tbody');
+        const emptyState = document.getElementById('empty-state');
+
+        const filtered = studentsCache.filter(s =>
+            !search || s.code.toLowerCase().includes(search) || (s.name || '').toLowerCase().includes(search)
+        );
+
+        document.getElementById('count-pill').innerText = `${studentsCache.length} طالب`;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
+        emptyState.style.display = 'none';
+
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        tbody.innerHTML = filtered.map(s => {
+            let statusHtml;
+            const expiry = s.expiryDate ? new Date(s.expiryDate) : null;
+            if (s.active === false) {
+                statusHtml = `<span class="status-pill status-inactive">موقوف</span>`;
+            } else if (expiry && expiry < today) {
+                statusHtml = `<span class="status-pill status-expired">منتهي</span>`;
+            } else {
+                statusHtml = `<span class="status-pill status-active">نشط</span>`;
+            }
+
+            return `
+                <tr>
+                    <td class="code-cell">${escapeHtml(s.code)}</td>
+                    <td>${escapeHtml(s.name || '—')}</td>
+                    <td>
+                        <input type="date" value="${s.expiryDate || ''}" style="padding:6px 8px; font-size:13px; width:150px;"
+                               onchange="window.updateExpiry('${s.code}', this.value)">
+                    </td>
+                    <td>${statusHtml}</td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="icon-btn" title="${s.active === false ? 'تفعيل' : 'إيقاف'}"
+                                    onclick="window.toggleActive('${s.code}', ${s.active === false})">
+                                ${s.active === false ? '▶️' : '⏸️'}
+                            </button>
+                            <button class="icon-btn danger" title="حذف" onclick="window.deleteStudent('${s.code}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    };
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[m]));
+    }
+
+    // ===== إضافة طالب جديد =====
+    window.addStudent = async function () {
+        const codeEl = document.getElementById('new-code');
+        const nameEl = document.getElementById('new-name');
+        const expiryEl = document.getElementById('new-expiry');
+
+        const code = codeEl.value.trim();
+        const name = nameEl.value.trim();
+        const expiry = expiryEl.value;
+
+        if (!code || !name) {
+            showToast("الرجاء إدخال الكود والاسم على الأقل");
+            return;
+        }
+
+        try {
+            await setDoc(doc(db, "students", code), {
+                name,
+                expiryDate: expiry || null,
+                active: true
+            });
+            codeEl.value = ''; nameEl.value = ''; expiryEl.value = '';
+            showToast(`تمت إضافة الطالب: ${name}`);
+        } catch (err) {
+            console.error(err);
+            showToast("حدث خطأ أثناء الإضافة");
+        }
+    };
+
+    // ===== تحديث تاريخ الانتهاء =====
+    window.updateExpiry = async function (code, newDate) {
+        try {
+            await updateDoc(doc(db, "students", code), { expiryDate: newDate || null });
+            showToast("تم تحديث تاريخ الانتهاء");
+        } catch (err) {
+            console.error(err);
+            showToast("تعذر التحديث");
+        }
+    };
+
+    // ===== تفعيل / إيقاف =====
+    window.toggleActive = async function (code, makeActive) {
+        try {
+            await updateDoc(doc(db, "students", code), { active: makeActive });
+            showToast(makeActive ? "تم تفعيل الطالب" : "تم إيقاف الطالب");
+        } catch (err) {
+            console.error(err);
+            showToast("تعذر تنفيذ العملية");
+        }
+    };
+
+    // ===== حذف طالب =====
+    window.deleteStudent = async function (code) {
+        if (!confirm(`هل أنت متأكد من حذف الطالب صاحب الكود "${code}"؟`)) return;
+        try {
+            await deleteDoc(doc(db, "students", code));
+            showToast("تم الحذف");
+        } catch (err) {
+            console.error(err);
+            showToast("تعذر الحذف");
+        }
+    };
+</script>
+</body>
+</html>
